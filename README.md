@@ -10,8 +10,7 @@ For example, if you want to add Subsite support to the taxonomy module:
 
 	TaxonomyAdmin:
 	  extensions:
-	    - SubsiteAdminExtension
+		- SubsiteAdminExtension
 	TaxonomyTerm:
 	  extensions:
 	   - SubsiteModelExtension
-

@@ -8,7 +8,7 @@ use SilverStripe\ORM\DataExtension;
 use SilverStripe\Subsites\Model\Subsite;
 use SilverStripe\ORM\Queries\SQLSelect;
 use SilverStripe\ORM\DataQuery;
-
+use SilverStripe\Subsites\State\SubsiteState;
 
 
 /**
@@ -26,13 +26,13 @@ class SubsiteModelExtension extends DataExtension {
     public function updateCMSFields(FieldList $fields) {
         $fields->removeByName('SubsiteID');
         if(class_exists(Subsite::class)){
-            $fields->push($subsite = HiddenField::create('SubsiteID','SubsiteID', Subsite::currentSubsiteID()));
+            $fields->push($subsite = HiddenField::create('SubsiteID','SubsiteID', SubsiteState::singleton()->getSubsiteId()));
         }
     }
 
     public function onBeforeWrite() {
         if (!$this->owner->ID && !$this->owner->SubsiteID) {
-            $this->owner->SubsiteID = Subsite::currentSubsiteID();
+            $this->owner->SubsiteID = SubsiteState::singleton()->getSubsiteId();
         }
     }
 

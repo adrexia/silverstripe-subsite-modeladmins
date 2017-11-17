@@ -5,6 +5,7 @@ namespace Adrexia\SubsiteModelAdmins;
 
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\Subsites\Model\Subsite;
+use SilverStripe\Subsites\State\SubsiteState;
 
 
 /**
@@ -18,7 +19,7 @@ class SubsiteAdminExtension extends DataExtension {
 
         $gridField = $form->Fields()->fieldByName($this->sanitiseClassNameExtension($this->owner->modelClass));
         if(class_exists(Subsite::class) && singleton($this->owner->modelClass)->hasDatabaseField('SubsiteID')){
-            $list = $gridField->getList()->filter(array('SubsiteID'=>Subsite::currentSubsiteID()));
+            $list = $gridField->getList()->filter(array('SubsiteID'=>SubsiteState::singleton()->getSubsiteId()));
             $gridField->setList($list);
         }
     }

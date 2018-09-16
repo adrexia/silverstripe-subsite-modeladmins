@@ -1,7 +1,7 @@
 {
   "name": "adrexia/subsite-modeladmins",
   "description": "Extensions for subsite support of ModelAdmins and data objects",
-  "type": "silverstripe-module",
+  "type": "silverstripe-vendormodule",
   "keywords": ["silverstripe"],
   "license": "BSD-3-Clause",
   "authors": [

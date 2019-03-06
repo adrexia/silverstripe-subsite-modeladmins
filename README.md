@@ -9,7 +9,7 @@ Silverstripe 4. See 3.0 branch for earlier versions. This branch is a work in pr
 ##Usage:
 
 In your config.yml file, include the extensions against the ModelAdmin and DataObject you want to add subsite support to.
-For example, if you want to add Subsite support to the taxonomy module:
+For example, if you want to add Subsite support to the RedirectedURLs module:
 
     SilverStripe\RedirectedURLs\Model\RedirectedURL:
       extensions:

@@ -42,29 +42,28 @@ class SubsiteModelExtension extends DataExtension {
      * @param DataQuery $dataQuery Container DataQuery for this SQLSelect
      */
     public function augmentSQL(SQLSelect $query, DataQuery $dataQuery = null) {
+        if (Subsite::$disable_subsite_filter) {
+            return;
+        }
 
-        // if (Subsite::$disable_subsite_filter) {
-        //     return;
-        // }
-        //
-        // // If you're querying by ID, ignore the sub-site
-        // if ($query->filtersOnID()) {
-        //     return;
-        // }
-        // $regexp = '/^(.*\.)?("|`)?SubsiteID("|`)?\s?=/';
-        // foreach ($query->getWhereParameterised($parameters) as $predicate) {
-        //     if (preg_match($regexp, $predicate)) {
-        //         return;
-        //     }
-        // }
-        //
-        // $subsiteID = (int)Subsite::currentSubsiteID();
-        //
-        // $froms=$query->getFrom();
-        // $froms=array_keys($froms);
-        // $tableName = array_shift($froms);
-        // if ($tableName === $this->owner->ClassName) {
-        //     $query->addWhere("\"$tableName\".\"SubsiteID\" IN ($subsiteID)");
-        // }
+        // If you're querying by ID, ignore the sub-site
+        if ($query->filtersOnID()) {
+            return;
+        }
+        $regexp = '/^(.*\.)?("|`)?SubsiteID("|`)?\s?=/';
+        foreach ($query->getWhereParameterised($parameters) as $predicate) {
+            if (preg_match($regexp, $predicate)) {
+                return;
+            }
+        }
+
+        $subsiteID = (int)SubsiteState::singleton()->getSubsiteId();
+
+        $froms=$query->getFrom();
+        $froms=array_keys($froms);
+        $tableName = array_shift($froms);
+        if ($tableName == $this->owner->baseTable()) {
+            $query->addWhere("\"$tableName\".\"SubsiteID\" IN ($subsiteID)");
+        }
     }
 }

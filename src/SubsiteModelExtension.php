@@ -2,46 +2,47 @@
 
 namespace Adrexia\SubsiteModelAdmins;
 
+use SilverStripe\Core\Extension;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\HiddenField;
-use SilverStripe\ORM\DataExtension;
-use SilverStripe\Subsites\Model\Subsite;
-use SilverStripe\ORM\Queries\SQLSelect;
 use SilverStripe\ORM\DataQuery;
+use SilverStripe\ORM\Queries\SQLSelect;
+use SilverStripe\Subsites\Model\Subsite;
 use SilverStripe\Subsites\State\SubsiteState;
-
 
 /**
  * Supplies neccessary subsite fields to a DataObject and ensures SQL queries
  * for the object are properly limited to the current subsite.
- *
- * @package Subsite-modeladmins
  */
-class SubsiteModelExtension extends DataExtension {
+class SubsiteModelExtension extends Extension
+{
+    private static $has_one = [
+        'Subsite' => Subsite::class,
+    ];
 
-    private static $has_one = array(
-        'Subsite' => Subsite::class
-    );
-
-    public function updateCMSFields(FieldList $fields) {
+    public function updateCMSFields(FieldList $fields)
+    {
         $fields->removeByName('SubsiteID');
-        if(class_exists(Subsite::class)){
-            $fields->push($subsite = HiddenField::create('SubsiteID','SubsiteID', SubsiteState::singleton()->getSubsiteId()));
+        if (class_exists(Subsite::class)) {
+            $fields->push($subsite = HiddenField::create('SubsiteID', 'SubsiteID', SubsiteState::singleton()->getSubsiteId()));
         }
     }
 
-    public function onBeforeWrite() {
-        if (!$this->owner->ID && !$this->owner->SubsiteID) {
-            $this->owner->SubsiteID = SubsiteState::singleton()->getSubsiteId();
+    public function onBeforeWrite()
+    {
+        if (!$this->getOwner()->ID && !$this->getOwner()->SubsiteID) {
+            $this->getOwner()->SubsiteID = SubsiteState::singleton()->getSubsiteId();
         }
     }
 
     /**
-     * Update any requests to limit the results to the current site
-     * @param SQLSelect $query Query to augment.
+     * Update any requests to limit the results to the current site.
+     *
+     * @param SQLSelect $query query to augment
      * @param DataQuery $dataQuery Container DataQuery for this SQLSelect
      */
-    public function augmentSQL(SQLSelect $query, DataQuery $dataQuery = null) {
+    public function augmentSQL(SQLSelect $query, ?DataQuery $dataQuery = null)
+    {
         if (Subsite::$disable_subsite_filter) {
             return;
         }
@@ -59,11 +60,11 @@ class SubsiteModelExtension extends DataExtension {
 
         $subsiteID = (int)SubsiteState::singleton()->getSubsiteId();
 
-        $froms=$query->getFrom();
-        $froms=array_keys($froms);
+        $froms = $query->getFrom();
+        $froms = array_keys($froms);
         $tableName = array_shift($froms);
-        if ($tableName == $this->owner->baseTable()) {
-            $query->addWhere("\"$tableName\".\"SubsiteID\" IN ($subsiteID)");
+        if ($tableName == $this->getOwner()->baseTable()) {
+            $query->addWhere("\"{$tableName}\".\"SubsiteID\" IN ({$subsiteID})");
         }
     }
 }

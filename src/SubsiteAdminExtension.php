@@ -2,37 +2,38 @@
 
 namespace Adrexia\SubsiteModelAdmins;
 
-
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
 use SilverStripe\Subsites\Model\Subsite;
 use SilverStripe\Subsites\State\SubsiteState;
 
-
 /**
- * Supplies neccessary subsite filtering to a ModelAdmin, and enables cms menu item
- *
- * @package subsite-modeladmins
+ * Supplies neccessary subsite filtering to a ModelAdmin, and enables cms menu item.
  */
-class SubsiteAdminExtension extends DataExtension {
-
-    public function updateEditForm($form){
-
-        $gridField = $form->Fields()->fieldByName($this->sanitiseClassNameExtension($this->owner->modelClass));
-        if(class_exists(Subsite::class) && singleton($this->owner->modelClass)->hasDatabaseField('SubsiteID')){
-            $list = $gridField->getList()->filter(array('SubsiteID'=>SubsiteState::singleton()->getSubsiteId()));
+class SubsiteAdminExtension extends Extension
+{
+    public function updateEditForm($form)
+    {
+        $gridField = $form->Fields()->fieldByName($this->sanitiseClassNameExtension($this->getOwner()->modelClass));
+        if (class_exists(Subsite::class) && singleton($this->getOwner()->modelClass)->hasDatabaseField('SubsiteID')) {
+            $list = $gridField->getList()->filter(['SubsiteID' => SubsiteState::singleton()->getSubsiteId()]);
             $gridField->setList($list);
         }
     }
 
-    /**
-     * Sanitise a model class' name (original method not avaliable to extension)
-     * @return string
-     */
-    protected function sanitiseClassNameExtension($class) {
-        return str_replace('\\', '-', $class);
+    public function subsiteCMSShowInMenu()
+    {
+        return true;
     }
 
-    public function subsiteCMSShowInMenu(){
-        return true;
+    /**
+     * Sanitise a model class' name (original method not avaliable to extension).
+     *
+     * @param mixed $class
+     *
+     * @return string
+     */
+    protected function sanitiseClassNameExtension($class)
+    {
+        return str_replace('\\', '-', $class);
     }
 }

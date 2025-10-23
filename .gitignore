@@ -1,0 +1,8 @@
+.graphql-generated/
+coverage/
+node_modules/
+public/_resources/
+silverstripe.log
+vendor/
+.php-cs-fixer.cache
+composer.lock

@@ -11,6 +11,12 @@
     }
   ],
   "require": {
-    "silverstripe/framework": "^4 || ^5"
+    "silverstripe/framework": "^6",
+    "silverstripe/subsites": "^4"
+  },
+  "autoload": {
+    "psr-4": {
+      "Adrexia\\SubsiteModelAdmins\\": "src/"
+    }
   }
 }

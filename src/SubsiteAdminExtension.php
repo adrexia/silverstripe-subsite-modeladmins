@@ -2,37 +2,41 @@
 
 namespace Adrexia\SubsiteModelAdmins;
 
-
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
+use SilverStripe\Forms\Form;
 use SilverStripe\Subsites\Model\Subsite;
 use SilverStripe\Subsites\State\SubsiteState;
 
-
 /**
- * Supplies neccessary subsite filtering to a ModelAdmin, and enables cms menu item
+ * Supplies necessary subsite filtering to a ModelAdmin, and enables cms menu item
  *
  * @package subsite-modeladmins
+ *
+ * @extends Extension<\SilverStripe\Admin\ModelAdmin>
  */
-class SubsiteAdminExtension extends DataExtension {
-
-    public function updateEditForm($form){
-
-        $gridField = $form->Fields()->fieldByName($this->sanitiseClassNameExtension($this->owner->modelClass));
-        if(class_exists(Subsite::class) && singleton($this->owner->modelClass)->hasDatabaseField('SubsiteID')){
-            $list = $gridField->getList()->filter(array('SubsiteID'=>SubsiteState::singleton()->getSubsiteId()));
+class SubsiteAdminExtension extends Extension
+{
+    protected function updateEditForm(Form $form): void
+    {
+        $modelClass = $this->owner->getModelClass();
+        /** @var \SilverStripe\Forms\GridField\GridField $gridField */
+        $gridField = $form->Fields()->fieldByName($this->sanitiseClassNameExtension($modelClass));
+        if (class_exists(Subsite::class) && singleton($modelClass)->hasDatabaseField('SubsiteID')) {
+            $list = $gridField->getList()->filter(['SubsiteID' => SubsiteState::singleton()->getSubsiteId()]);
             $gridField->setList($list);
         }
     }
 
     /**
-     * Sanitise a model class' name (original method not avaliable to extension)
-     * @return string
+     * Sanitise a model class' name (original method not available to extension)
      */
-    protected function sanitiseClassNameExtension($class) {
+    protected function sanitiseClassNameExtension(string $class): string
+    {
         return str_replace('\\', '-', $class);
     }
 
-    public function subsiteCMSShowInMenu(){
+    public function subsiteCMSShowInMenu(): bool
+    {
         return true;
     }
 }
